@@ -54,8 +54,8 @@
 		</dependency>
 	</dependencies>
 	<scm>
-		<connection>https://github.com/ulwx/aka-dbutils-spring.git</connection>
-		<url>https://github.com/ulwx/aka-dbutils-spring</url>
+		<connection>https://github.com/ulwx/aka-dbutils-spring-dynamic-datasoruce.git</connection>
+		<url>https://github.com/ulwx/aka-dbutils-spring-dynamic-datasoruce</url>
 	</scm>
 
 </project>

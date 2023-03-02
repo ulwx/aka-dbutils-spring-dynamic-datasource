@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Component
@@ -17,9 +16,9 @@ public class AddressDao {
     private MDataBaseTemplate mDataBaseTemplate1;
     private MDataBaseTemplate mDataBaseTemplate2;
     public void init(){
-        mDataBaseTemplate1.exeScript("/","test.sql",
+        mDataBaseTemplate1.exeScript("","test.sql",
                 false,true,";","utf-8");
-        mDataBaseTemplate2.exeScript("/","test2.sql",
+        mDataBaseTemplate2.exeScript("","test.sql",
                 false,true,";","utf-8");
     }
     public AddressDao(MDataBaseTemplate mDataBaseTemplate1,MDataBaseTemplate mDataBaseTemplate2){
@@ -27,20 +26,20 @@ public class AddressDao {
         this.mDataBaseTemplate2=mDataBaseTemplate2;
     }
 
-    public List<Address> getListMd1(){
+    public Address getListMd1(){
         Map<String, Object> mp=new HashMap<>();
-
-        List<Address> list=mDataBaseTemplate1.queryList(Address.class,
+        mp.put("id",1);
+        Address address=mDataBaseTemplate1.queryOne(Address.class,
                 MD.md(),mp);
-        return list;
+        return address;
 
     }
-    public List<Address> getListMd2(){
+    public Address getListMd2(){
         Map<String, Object> mp=new HashMap<>();
-
-        List<Address> list=mDataBaseTemplate2.queryList(Address.class,
+        mp.put("id",2);
+        Address address=mDataBaseTemplate1.queryOne(Address.class,
                 MD.md(),mp);
-        return list;
+        return address;
 
     }
     @Transactional(propagation = Propagation.REQUIRED)
