@@ -70,19 +70,7 @@ public class MyConfiguration {
         dt.setDataSource(dynamicDataSource);
         return dt;
     }
-    // @Bean
-    // public DataSourceTransactionManager transactionManager1() {
-    //     DataSourceTransactionManager dt = new DataSourceTransactionManager();
-    //     dt.setDataSource(dataSource1());
-    //     return dt;
-    // }
-    //
-    // @Bean
-    // public DataSourceTransactionManager transactionManager2() {
-    //     DataSourceTransactionManager dt = new DataSourceTransactionManager();
-    //     dt.setDataSource(dataSource2());
-    //     return dt;
-    // }
+
     @Bean
     public MDataBaseFactory mDataBaseFactory1(DynamicDataSource dynamicDataSource) {
         MDataBaseFactory mDataBaseFactory = new MDataBaseFactory(dynamicDataSource);
