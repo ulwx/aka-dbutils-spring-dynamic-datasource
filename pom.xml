@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>aka-dbutils-spring-dynamic-datasoruce</artifactId>
+	<artifactId>aka-dbutils-spring-dynamic-datasource</artifactId>
 	<groupId>com.github.ulwx</groupId>
 	<parent>
 		<groupId>com.github.ulwx</groupId>
@@ -54,8 +54,8 @@
 		</dependency>
 	</dependencies>
 	<scm>
-		<connection>https://github.com/ulwx/aka-dbutils-spring-dynamic-datasoruce.git</connection>
-		<url>https://github.com/ulwx/aka-dbutils-spring-dynamic-datasoruce</url>
+		<connection>https://github.com/ulwx/aka-dbutils-spring-dynamic-datasource.git</connection>
+		<url>https://github.com/ulwx/aka-dbutils-spring-dynamic-datasource</url>
 	</scm>
 
 </project>
