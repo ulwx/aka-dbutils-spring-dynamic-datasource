@@ -1,7 +1,7 @@
 package com.github.ulwx.aka.dbutils.database.spring.boot;
 
-import com.github.ulwx.aka.dbutils.database.multids.AkaDS;
 import com.github.ulwx.aka.dbutils.database.spring.MDataBaseTemplate;
+import com.github.ulwx.aka.dbutils.spring.multids.AkaDS;
 import com.github.ulwx.aka.dbutils.tool.MD;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;

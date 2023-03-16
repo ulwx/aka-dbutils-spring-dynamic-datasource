@@ -1,6 +1,6 @@
 package com.github.ulwx.aka.dbutils.database.spring.boot;
 
-import com.github.ulwx.aka.dbutils.database.multids.AkaDS;
+import com.github.ulwx.aka.dbutils.spring.multids.AkaDS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

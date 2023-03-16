@@ -1,4 +1,4 @@
-package com.github.ulwx.aka.dbutils.database.multids;
+package com.github.ulwx.aka.dbutils.spring.multids;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,22 +14,32 @@ public class AkaProxyConnection implements Connection {
 
     private LinkedHashMap<DataSource,Connection> map = new LinkedHashMap<>();
 
-    private DynamicDataSource dynamicDataSource;
+    private AkaDynamicDataSource dynamicDataSource;
 
-    public AkaProxyConnection(DynamicDataSource dynamicDataSource) {
+    public AkaProxyConnection(AkaDynamicDataSource dynamicDataSource) {
         this.dynamicDataSource = dynamicDataSource;
     }
 
-    public  Connection getConnection()throws SQLException{
+    private   Connection getConnection()throws SQLException{
         DataSource dataSource=dynamicDataSource.determineTargetDataSource();
         Connection connection= map.get(dataSource);
         if(connection==null){
-            connection= dataSource.getConnection();
-            connection.setAutoCommit(autoCommit);
-            map.put(dataSource,connection);
+            try {
+                connection = dataSource.getConnection();
+                if(LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("fetch a new connection:" + connection+" from datasource");
+                }
+                connection.setAutoCommit(autoCommit);
+                map.put(dataSource,connection);
+            }catch (Exception e){
+                dynamicDataSource.IncreaseErr();
+                throw e;
+            }
+
         }
         if(LOGGER.isDebugEnabled()) {
-            LOGGER.debug("ds:" + DataSourceContext.get() + "," + dataSource.toString() + ";con=" + connection);
+            LOGGER.debug("return ds:" + dynamicDataSource.determineCurrentLookupKey()
+                    + "," + dataSource.getClass() + ";con=" + connection);
         }
         return connection;
     }
@@ -60,7 +70,7 @@ public class AkaProxyConnection implements Connection {
         exeAll((connection) -> {
             connection.setAutoCommit(autoCommit);
             if(LOGGER.isDebugEnabled()) {
-                LOGGER.debug("set autoCommit:" + autoCommit + ";" + connection + "");
+                LOGGER.debug("set autoCommit=" + autoCommit + ";" + connection + "");
             }
             return true;
         });
@@ -113,10 +123,14 @@ public class AkaProxyConnection implements Connection {
     public void close() throws SQLException {
         exeAll((connection) -> {
             if(!connection.isClosed()) {
-                connection.close();
+                try {
+                    connection.close();
+                }catch (Exception e){
+                    LOGGER.error(""+e,e);
+                }
             }
             if(LOGGER.isDebugEnabled()) {
-                LOGGER.debug("closed..." + connection + "");
+                LOGGER.debug(" closed.." +this+"["+ connection + "]");
             }
             return true;
         });

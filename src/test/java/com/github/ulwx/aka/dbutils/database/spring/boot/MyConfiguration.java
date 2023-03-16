@@ -1,10 +1,10 @@
 package com.github.ulwx.aka.dbutils.database.spring.boot;
 
-import com.github.ulwx.aka.dbutils.database.multids.DataSourceAspect;
-import com.github.ulwx.aka.dbutils.database.multids.DynamicDataSource;
 import com.github.ulwx.aka.dbutils.database.spring.MDataBaseFactory;
 import com.github.ulwx.aka.dbutils.database.spring.MDataBaseTemplate;
 import com.github.ulwx.aka.dbutils.database.utils.DbConst;
+import com.github.ulwx.aka.dbutils.spring.multids.AkaDataSourceAspect;
+import com.github.ulwx.aka.dbutils.spring.multids.AkaDynamicDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.*;
@@ -19,20 +19,20 @@ import java.util.Map;
 @EnableAspectJAutoProxy(exposeProxy = true)
 @Configuration
 @ComponentScan
-@Import(DataSourceAspect.class)
+@Import(AkaDataSourceAspect.class)
 public class MyConfiguration {
 
     @Bean(name = "dynamicDataSource")
-    public DynamicDataSource DataSource(@Qualifier("dataSource1") DataSource dataSource1,
-                                        @Qualifier("dataSource2") DataSource dataSource2) {
+    public AkaDynamicDataSource DataSource(@Qualifier("dataSource1") DataSource dataSource1,
+                                           @Qualifier("dataSource2") DataSource dataSource2) {
         //targetDataSource 集合是我们数据库和名字之间的映射
-        Map<Object, Object> targetDataSource = new HashMap<>();
+        Map<String, DataSource> targetDataSource = new HashMap<>();
         targetDataSource.put("dataSource1", dataSource1);
         targetDataSource.put("dataSource2", dataSource2);
-        DynamicDataSource dataSource = new DynamicDataSource();
+        AkaDynamicDataSource dataSource = new AkaDynamicDataSource();
         dataSource.setTargetDataSources(targetDataSource);
         //设置默认对象
-        dataSource.setDefaultTargetDataSource(dataSource1);
+        dataSource.setDefaultTargetDataSourceName("dataSource1");
         return dataSource;
     }
     @Bean(destroyMethod = "close")
@@ -65,14 +65,14 @@ public class MyConfiguration {
     }
 
     @Bean
-    public DataSourceTransactionManager transactionManager(DynamicDataSource dynamicDataSource) {
+    public DataSourceTransactionManager transactionManager(AkaDynamicDataSource dynamicDataSource) {
         DataSourceTransactionManager dt = new DataSourceTransactionManager();
         dt.setDataSource(dynamicDataSource);
         return dt;
     }
 
     @Bean
-    public MDataBaseFactory mDataBaseFactory1(DynamicDataSource dynamicDataSource) {
+    public MDataBaseFactory mDataBaseFactory1(AkaDynamicDataSource dynamicDataSource) {
         MDataBaseFactory mDataBaseFactory = new MDataBaseFactory(dynamicDataSource);
         mDataBaseFactory.setTableColumRule(DbConst.TableNameRules.underline_to_camel);
         mDataBaseFactory.setTableNameRule(DbConst.TableColumRules.underline_to_camel);
@@ -80,7 +80,7 @@ public class MyConfiguration {
 
     }
     @Bean
-    public MDataBaseFactory mDataBaseFactory2(DynamicDataSource dynamicDataSource) {
+    public MDataBaseFactory mDataBaseFactory2(AkaDynamicDataSource dynamicDataSource) {
         MDataBaseFactory mDataBaseFactory = new MDataBaseFactory(dynamicDataSource);
         mDataBaseFactory.setTableColumRule(DbConst.TableNameRules.underline_to_camel);
         mDataBaseFactory.setTableNameRule(DbConst.TableColumRules.underline_to_camel);

@@ -1,4 +1,4 @@
-package com.github.ulwx.aka.dbutils.database.multids;
+ package com.github.ulwx.aka.dbutils.spring.multids;
 
 import java.sql.SQLException;
 
