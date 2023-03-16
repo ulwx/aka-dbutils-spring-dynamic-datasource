@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 public @interface AkaDS {
     /**
      * 指定{@link com.github.ulwx.aka.dbutils.spring.multids.AkaDynamicDataSource}的Bean名称，如果没有则默认在Spring
-     * 上下文里查找一个{@link com.github.ulwx.aka.dbutils.spring.multids.AkaDynamicDataSource}类型的Bean
+     * 上下文里查找一个 {@link com.github.ulwx.aka.dbutils.spring.multids.AkaDynamicDataSource}类型的Bean
      * @return
      */
      String dynamicDataSourceBeanName() default "";
