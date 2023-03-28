@@ -19,7 +19,6 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map;
@@ -41,7 +40,7 @@ public class AkaDataSourceAspect implements ApplicationContextAware {
 
     }
     static ExpressionParser parser = new SpelExpressionParser();
-    static ParserContext parserContext = new TemplateParserContext("${", "}");
+    static ParserContext parserContext = new TemplateParserContext("{", "}");
     @Around("dsPointCut()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
         MethodSignature signature = (MethodSignature) point.getSignature();
@@ -56,14 +55,13 @@ public class AkaDataSourceAspect implements ApplicationContextAware {
             akaDynamicDataSource= applicationContext.getBean(AkaDynamicDataSource.class);
         }
 
-        Map<String, DataSource> map= akaDynamicDataSource.getTargetDataSources();
         String dsName=akaDsAnnotation.value();
         if(dsName==null || dsName.trim().isEmpty()){
             dsName=akaDynamicDataSource.getDefaultTargetDataSourceName();
         }else{
             dsName=dsName.trim();
         }
-        if(dsName.contains("${")){//说明是表达式
+        if(dsName.contains("{") && dsName.contains("}")){//说明是表达式
             StandardEvaluationContext context = new StandardEvaluationContext();
             Map<String,Object> paramatersMap = AkaDataSourceContext.getParamatersMap();
             context.setVariables(paramatersMap);
@@ -86,12 +84,28 @@ public class AkaDataSourceAspect implements ApplicationContextAware {
 
         AkaDataSourceContext.push(dsName);
         log.debug("当前数据源" + dsName);
+        Map<String, DataSourceInfo> map= akaDynamicDataSource.getTargetDataSources();
+        DataSourceInfo dataSourceInfo=map.get(dsName);
+        String seata= dataSourceInfo.getSeata()==null?"":dataSourceInfo.getSeata().trim();
+        String poolType=dataSourceInfo.getPoolType()==null?"":dataSourceInfo.getPoolType().trim();
         try {
+            if( seata.equalsIgnoreCase("AT") &&
+              poolType.equalsIgnoreCase("ShardingJDBC")){
+                org.apache.shardingsphere.transaction.core.TransactionTypeHolder.set(
+                        org.apache.shardingsphere.transaction.api.TransactionType.BASE);
+
+            }
             return point.proceed();
         } finally {
             // 销毁数据源 在执行方法之后
-            log.debug("销毁数据源" + dsName);
+            log.debug("弹出数据源" + dsName);
+            if( seata.equalsIgnoreCase("AT") &&
+                    poolType.equalsIgnoreCase("ShardingJDBC")){
+                org.apache.shardingsphere.transaction.core.TransactionTypeHolder.clear();
+
+            }
             AkaDataSourceContext.pop();
+
         }
     }
 

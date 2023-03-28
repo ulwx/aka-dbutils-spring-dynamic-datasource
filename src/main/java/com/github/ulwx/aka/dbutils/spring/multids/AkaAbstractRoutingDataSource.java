@@ -13,23 +13,33 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class AkaAbstractRoutingDataSource extends AbstractDataSource implements InitializingBean {
 
 	@Nullable
-	private final Map<String, DataSource> targetDataSources=new ConcurrentHashMap<>();
+	private volatile ConcurrentHashMap<String, DataSourceInfo> targetDataSourceInfos=new ConcurrentHashMap<>();
 
 	private volatile String defaultTargetDataSourceName;
+
+	protected final static ThreadLocal<DataSourceInfo> Context =
+			new ThreadLocal<DataSourceInfo>();
 
 	public String getDefaultTargetDataSourceName() {
 		return defaultTargetDataSourceName;
 	}
 
+	public void setTargetDataSourceInfos(ConcurrentHashMap<String, DataSourceInfo> targetDataSourceInfos) {
+		this.targetDataSourceInfos=targetDataSourceInfos;
+	}
 	public void setTargetDataSources(Map<String, DataSource> targetDataSources) {
-
-		this.targetDataSources.putAll(targetDataSources);
+		for(String key: targetDataSources.keySet()){
+			DataSource dataSource=targetDataSources.get(key);
+			DataSourceInfo dataSourceInfo=new DataSourceInfo(key,dataSource);
+			dataSourceInfo.setOriginalDataSource(dataSource);
+			this.targetDataSourceInfos.put(key,dataSourceInfo);
+		}
 	}
-
 	@Nullable
-	public Map<String, DataSource> getTargetDataSources() {
-		return targetDataSources;
+	public ConcurrentHashMap<String, DataSourceInfo> getTargetDataSources() {
+		return targetDataSourceInfos;
 	}
+
 
 
 	@Override
@@ -55,7 +65,13 @@ public abstract class AkaAbstractRoutingDataSource extends AbstractDataSource im
 	public DataSource determineTargetDataSource() {
 
 		String lookupKey = determineCurrentLookupKey();
-		DataSource dataSource = this.targetDataSources.get(lookupKey);
+		DataSourceInfo dataSourceInfo = this.targetDataSourceInfos.get(lookupKey);
+
+		if(dataSourceInfo==null){
+			throw new RuntimeException("无法通过"+lookupKey+"找到相应的数据源！");
+		}
+		Context.set(dataSourceInfo);
+		DataSource dataSource= dataSourceInfo.getDataSource();
 		return dataSource;
 	}
 

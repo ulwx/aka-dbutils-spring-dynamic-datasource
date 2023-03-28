@@ -1,16 +1,17 @@
 package com.github.ulwx.aka.dbutils.spring.multids;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class AkaDynamicDataSource extends AkaAbstractRoutingDataSource {
     private final Map<String,DataSourceStat> statMap=new ConcurrentHashMap<>();
     private final Set<String> groupNames=new ConcurrentSkipListSet<>();
-
+    private final String group_prefix="--";
     public AkaDynamicDataSource() {
     }
 
@@ -27,8 +28,11 @@ public class AkaDynamicDataSource extends AkaAbstractRoutingDataSource {
         return lookupKey;
     }
 
-
+    public static DataSourceInfo getCurrentDS(){
+        return Context.get();
+    }
     public Set<String> getDataSourcesByGroupName(String groupName){
+        groupName=groupName+group_prefix;
         Set<String> list = new TreeSet<>();
         for(String key: this.getTargetDataSources().keySet()){
             if(key.startsWith(groupName)){
@@ -60,11 +64,11 @@ public class AkaDynamicDataSource extends AkaAbstractRoutingDataSource {
 
     @Override
     public void afterPropertiesSet() {
-        Map<String, DataSource> map = this.getTargetDataSources();
+        Map<String, DataSourceInfo> map = this.getTargetDataSources();
         for(String key: map.keySet()){
-            DataSource dataSource=map.get(key);
-            statMap.put(key.toString(),new DataSourceStat(dataSource));
-            if(key.contains("--")){
+            DataSourceInfo dataSourceInfo=map.get(key);
+            statMap.put(key.toString(),new DataSourceStat(dataSourceInfo.getDataSource()));
+            if(key.contains(group_prefix)){
                 groupNames.add(key.substring(0,key.indexOf("--")));
             }
         }

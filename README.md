@@ -1,1 +1,1 @@
-# adbutils-spring-dynamic-datasoruce
+# aka-dbutils-spring-dynamic-datasource

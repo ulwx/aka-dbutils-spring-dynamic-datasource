@@ -39,7 +39,7 @@ public class AkaDataSourceContext {
 
     public static void executeMethod(String dsName,Call function){
         try {
-            push(dsName);
+             push(dsName);
              function.call();
         }finally {
             pop();
@@ -55,6 +55,9 @@ public class AkaDataSourceContext {
        return  PARAMATERS_MAP.get();
     }
 
+    public static DataSourceInfo getCurrentDS(){
+        return AkaDynamicDataSource.getCurrentDS();
+    }
     public static interface  Call{
         void call() ;
     }
