@@ -12,13 +12,13 @@ public class AkaDataSourceContext {
                 protected Stack<StackDsInfo> initialValue() {
                     return new Stack<>();
                 }
-            };
+    };
 
     private final static ThreadLocal<Map<String,Object>> PARAMATERS_MAP =
             new ThreadLocal<Map<String,Object>>(){
                 @Override
                 protected Map<String,Object> initialValue() {
-                    return new HashMap<>();
+                    return new HashMap<String,Object>();
                 }
            };
 
@@ -27,13 +27,21 @@ public class AkaDataSourceContext {
         stackDsInfo.setDsName(name);
         LOCAL_DATASOURCE.get().push(stackDsInfo);
     }
-
+    public static void push(StackDsInfo stackDsInfo) {
+        LOCAL_DATASOURCE.get().push(stackDsInfo);
+    }
+    public static StackDsInfo getDsInfo(){
+        return LOCAL_DATASOURCE.get().size()==0?null:LOCAL_DATASOURCE.get().peek();
+    }
     public static String  get() {
         return LOCAL_DATASOURCE.get().size()==0?null:LOCAL_DATASOURCE.get().peek().getDsName();
     }
 
-    public static void pop() {
-        LOCAL_DATASOURCE.get().pop();
+    public static StackDsInfo pop() {
+        if(LOCAL_DATASOURCE.get().size()>0) {
+            return LOCAL_DATASOURCE.get().pop();
+        }
+        return null;
     }
 
 
@@ -51,7 +59,7 @@ public class AkaDataSourceContext {
     public static void varRemove(String name) {
         PARAMATERS_MAP.get().remove(name);
     }
-    static  Map<String,Object> getParamatersMap() {
+    public static  Map<String,Object> getParamatersMap() {
        return  PARAMATERS_MAP.get();
     }
 

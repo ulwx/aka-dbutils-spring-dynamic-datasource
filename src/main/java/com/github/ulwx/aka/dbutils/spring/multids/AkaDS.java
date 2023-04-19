@@ -1,12 +1,10 @@
 package com.github.ulwx.aka.dbutils.spring.multids;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD,ElementType.TYPE})
+@Inherited
 public @interface AkaDS {
     /**
      * 指定{@link com.github.ulwx.aka.dbutils.spring.multids.AkaDynamicDataSource}的Bean名称，如果没有则默认在Spring

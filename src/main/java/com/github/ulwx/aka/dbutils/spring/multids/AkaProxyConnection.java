@@ -67,6 +67,7 @@ public class AkaProxyConnection implements Connection {
     @Override
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit=autoCommit;
+        LOGGER.debug("start setAutoCommit...");
         exeAll((connection) -> {
             connection.setAutoCommit(autoCommit);
             if(LOGGER.isDebugEnabled()) {
@@ -74,6 +75,7 @@ public class AkaProxyConnection implements Connection {
             }
             return true;
         });
+        LOGGER.debug("end setAutoCommit...");
     }
 
     @Override
@@ -97,7 +99,7 @@ public class AkaProxyConnection implements Connection {
     }
     @Override
     public void commit() throws SQLException {
-
+        LOGGER.debug("start commit...");
         exeAll((connection) -> {
             connection.commit();
             if(LOGGER.isDebugEnabled()) {
@@ -105,10 +107,12 @@ public class AkaProxyConnection implements Connection {
             }
             return true;
         });
+        LOGGER.debug("end commit...");
     }
 
     @Override
     public void rollback() throws SQLException {
+        LOGGER.debug("start rollback...");
         exeAll((connection) -> {
             connection.rollback();
             if(LOGGER.isDebugEnabled()) {
@@ -116,11 +120,13 @@ public class AkaProxyConnection implements Connection {
             }
             return true;
         });
+        LOGGER.debug("end rollback...");
 
     }
 
     @Override
     public void close() throws SQLException {
+        LOGGER.debug("start close...");
         exeAll((connection) -> {
             if(!connection.isClosed()) {
                 try {
@@ -134,6 +140,7 @@ public class AkaProxyConnection implements Connection {
             }
             return true;
         });
+        LOGGER.debug("end close...");
         map.clear();
 
     }

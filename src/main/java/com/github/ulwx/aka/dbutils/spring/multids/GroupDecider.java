@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 public abstract  class GroupDecider {
+    public final static String Random="random";
+
     public static Map<String,GroupDecider> map=new HashMap();
     static{
         map.put(RandomGroupDecider.instance.getType(),RandomGroupDecider.instance);

@@ -13,6 +13,6 @@ public class RandomGroupDecider extends GroupDecider{
 
     @Override
     public String getType() {
-        return "random";
+        return GroupDecider.Random;
     }
 }
