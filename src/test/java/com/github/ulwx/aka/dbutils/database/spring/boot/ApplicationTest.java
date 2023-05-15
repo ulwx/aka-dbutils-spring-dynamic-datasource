@@ -8,8 +8,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ApplicationTest {
+
     @Test
-    public  void test() throws Exception{
+    public   void test() throws Exception{
         AnnotationConfigApplicationContext ctx =
                 new AnnotationConfigApplicationContext(MyConfiguration.class);
         MyService myService=(MyService)ctx.getBean("myService");//AddressDao

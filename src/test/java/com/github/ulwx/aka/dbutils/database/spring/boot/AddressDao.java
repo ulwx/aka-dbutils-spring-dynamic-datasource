@@ -42,8 +42,8 @@ public class AddressDao {
         return address;
 
     }
-    @Transactional(propagation = Propagation.REQUIRED)
     @AkaDS("dataSource1")
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updateMd1(int id,String name){
         Map<String, Object> mp=new HashMap<>();
         mp.put("name",name);
@@ -51,8 +51,8 @@ public class AddressDao {
         mDataBaseTemplate1.update(MD.md(),mp);
 
     }
-    @Transactional(propagation = Propagation.NESTED)
     @AkaDS("dataSource2")
+    @Transactional(propagation = Propagation.NESTED)
     public void updateMd2(int id,String name){
         Map<String, Object> mp=new HashMap<>();
         mp.put("name",name);

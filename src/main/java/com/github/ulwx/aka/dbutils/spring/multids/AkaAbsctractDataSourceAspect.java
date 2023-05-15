@@ -32,8 +32,9 @@ public abstract class AkaAbsctractDataSourceAspect implements ApplicationContext
 
     abstract public  DataSourceAspectInfo getDataSourceAspectInfo(ProceedingJoinPoint point);
 
-    @Pointcut("@annotation(com.github.ulwx.aka.dbutils.spring.multids.AkaDS)" +
-            "|| @target(com.github.ulwx.aka.dbutils.spring.multids.AkaDS)")
+    @Pointcut("@annotation(com.github.ulwx.aka.dbutils.spring.multids.AkaDS)"
+             + "|| @within(com.github.ulwx.aka.dbutils.spring.multids.AkaDS)"
+    )
     public void dsPointCut() {
     }
 

@@ -46,8 +46,8 @@ public class AkaDataSourceContext {
 
 
     public static void executeMethod(String dsName,Call function){
+        push(dsName);
         try {
-             push(dsName);
              function.call();
         }finally {
             pop();
