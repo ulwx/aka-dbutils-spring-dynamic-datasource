@@ -8,14 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.ParserContext;
+import org.springframework.expression.*;
 import org.springframework.expression.common.TemplateParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,7 +27,7 @@ public abstract class AkaAbsctractDataSourceAspect implements ApplicationContext
     }
 
     final static ExpressionParser parser = new SpelExpressionParser();
-    final static ParserContext parserContext = new TemplateParserContext("{", "}");
+    final static ParserContext parserContext = new TemplateParserContext();
 
     abstract public  DataSourceAspectInfo getDataSourceAspectInfo(ProceedingJoinPoint point);
 
@@ -56,7 +55,38 @@ public abstract class AkaAbsctractDataSourceAspect implements ApplicationContext
         return isAtAndShardingJdbc;
     }
 
-    public   Object handle(ProceedingJoinPoint point, DataSourceAspectInfo dataSourceAspectInfo)throws Throwable {
+    private static List<PropertyAccessor> propertyAccessors=new ArrayList<>();
+    static {
+        propertyAccessors.add(new MyPropertyAccessor());
+    }
+    public static class MyPropertyAccessor implements PropertyAccessor{
+        @Override
+        public Class<?>[] getSpecificTargetClasses() {
+            return new Class[]{Map.class};
+        }
+
+        @Override
+        public boolean canRead(EvaluationContext context, Object target, String name) throws AccessException {
+            return true;
+        }
+
+        @Override
+        public TypedValue read(EvaluationContext context, Object target, String name) throws AccessException {
+            Object value=((Map)target).get(name);
+            return new  TypedValue(value);
+        }
+
+        @Override
+        public boolean canWrite(EvaluationContext context, Object target, String name) throws AccessException {
+            return false;
+        }
+
+        @Override
+        public void write(EvaluationContext context, Object target, String name, Object newValue) throws AccessException {
+
+        }
+    }
+    public  Object handle(ProceedingJoinPoint point, DataSourceAspectInfo dataSourceAspectInfo)throws Throwable {
 
         String dynamicDataSourceBeanName=dataSourceAspectInfo.getDynamicDataSourceBeanName()==null?"":
                 dataSourceAspectInfo.getDynamicDataSourceBeanName().trim();
@@ -76,10 +106,13 @@ public abstract class AkaAbsctractDataSourceAspect implements ApplicationContext
         }else{
             dsName=dsName.trim();
         }
-        if(dsName.contains("{") && dsName.contains("}")){//说明是表达式
+        dsName=applicationContext.getEnvironment().resolvePlaceholders(dsName);
+        if(dsName.contains("#{") && dsName.contains("}")){//说明是表达式
             StandardEvaluationContext context = new StandardEvaluationContext();
             Map<String,Object> paramatersMap = AkaDataSourceContext.getParamatersMap();
-            context.setVariables(paramatersMap);
+            context.setPropertyAccessors(propertyAccessors);
+            context.setRootObject(paramatersMap);
+           // context.setVariables(paramatersMap);
             Expression expression = parser.parseExpression(dsName,parserContext);
             String elValue=expression.getValue(context).toString();
             dsName=elValue;
