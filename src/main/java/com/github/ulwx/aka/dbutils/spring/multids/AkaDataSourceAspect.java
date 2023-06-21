@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 
 @Aspect
 @Order(-1)
-@Component
+@Component("com.github.ulwx.aka.dbutils.spring.multids.AkaDataSourceAspect")
 public class AkaDataSourceAspect  extends AkaAbsctractDataSourceAspect{
 
     @Override
