@@ -145,8 +145,8 @@ public abstract class AkaAbsctractDataSourceAspect implements ApplicationContext
             AkaDataSourceContext.push(stackDsInfo);
             if(isAtAndShardingJdbc){
                 if(parent==null|| !parent.isShardingjdbcAndSeataAtContext()) {
-                    org.apache.shardingsphere.transaction.core.TransactionTypeHolder.set(
-                            org.apache.shardingsphere.transaction.api.TransactionType.BASE);
+//                    org.apache.shardingsphere.transaction.core.TransactionTypeHolder.set(
+//                            org.apache.shardingsphere.transaction.api.TransactionType.BASE);
                     stackDsInfo.setShardingjdbcAndSeataAtContextStart(true);
                 }
                 stackDsInfo.setShardingjdbcAndSeataAtContext(true);
@@ -158,11 +158,11 @@ public abstract class AkaAbsctractDataSourceAspect implements ApplicationContext
             }
             return point.proceed();
         } finally {
-            StackDsInfo stackDsInfo=AkaDataSourceContext.pop();
+            StackDsInfo stackDsInfo=AkaDataSourceContext.pop(dsName);
             // 销毁数据源 在执行方法之后
             log.debug("弹出数据源" + dsName);
             if( stackDsInfo.isShardingjdbcAndSeataAtContextStart()){
-                org.apache.shardingsphere.transaction.core.TransactionTypeHolder.clear();
+               // org.apache.shardingsphere.transaction.core.TransactionTypeHolder.clear();
 
             }
 

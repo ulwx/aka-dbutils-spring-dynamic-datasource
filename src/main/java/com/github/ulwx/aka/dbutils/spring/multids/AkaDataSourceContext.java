@@ -37,9 +37,14 @@ public class AkaDataSourceContext {
         return LOCAL_DATASOURCE.get().size()==0?null:LOCAL_DATASOURCE.get().peek().getDsName();
     }
 
-    public static StackDsInfo pop() {
+    public static StackDsInfo pop(String name) {
         if(LOCAL_DATASOURCE.get().size()>0) {
-            return LOCAL_DATASOURCE.get().pop();
+            StackDsInfo pop= LOCAL_DATASOURCE.get().pop();
+            if(name.equals(pop.getDsName())){
+                return pop;
+            }else{
+                throw new RuntimeException("内存状态不一致！name="+name+",pop="+pop.getDsName());
+            }
         }
         return null;
     }
@@ -50,7 +55,7 @@ public class AkaDataSourceContext {
         try {
              function.call();
         }finally {
-            pop();
+            pop(dsName);
         }
     }
     public static void varPut(String name,Object value) {
