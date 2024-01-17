@@ -2,7 +2,6 @@ package com.github.ulwx.aka.dbutils.spring.multids;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -31,11 +30,7 @@ public abstract class AkaAbsctractDataSourceAspect implements ApplicationContext
 
     abstract public  DataSourceAspectInfo getDataSourceAspectInfo(ProceedingJoinPoint point);
 
-    @Pointcut("@annotation(com.github.ulwx.aka.dbutils.spring.multids.AkaDS)"
-             + "|| @within(com.github.ulwx.aka.dbutils.spring.multids.AkaDS)"
-    )
-    public void dsPointCut() {
-    }
+
 
     @Around("dsPointCut()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
@@ -133,6 +128,9 @@ public abstract class AkaAbsctractDataSourceAspect implements ApplicationContext
 
         Map<String, DataSourceInfo> map= akaDynamicDataSource.getTargetDataSources();
         DataSourceInfo dataSourceInfo=map.get(dsName);
+        if(dataSourceInfo==null) {
+            throw new RuntimeException("无法获取数据源"+dsName+"的信息！");
+        }
         boolean isAtAndShardingJdbc=isShardingJdbcDSAndAt(dataSourceInfo);;
         try {
             StackDsInfo parent=AkaDataSourceContext.getDsInfo();
