@@ -3,6 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>aka-dbutils-spring-dynamic-datasource</artifactId>
 	<groupId>com.github.ulwx</groupId>
+	<name>aka-dbutils-spring-dynamic-datasource</name>
 	<parent>
 		<groupId>com.github.ulwx</groupId>
 		<artifactId>aka-common-parent</artifactId>
