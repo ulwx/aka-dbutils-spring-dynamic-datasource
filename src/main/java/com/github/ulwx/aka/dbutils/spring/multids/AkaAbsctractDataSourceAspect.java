@@ -155,7 +155,11 @@ public abstract class AkaAbsctractDataSourceAspect implements ApplicationContext
 
             }
             return point.proceed();
-        } finally {
+        } catch (Exception e) {
+            log.error(""+e,e);
+            throw e;
+        }
+        finally {
             StackDsInfo stackDsInfo=AkaDataSourceContext.pop(dsName);
             // 销毁数据源 在执行方法之后
             log.debug("弹出数据源" + dsName);
