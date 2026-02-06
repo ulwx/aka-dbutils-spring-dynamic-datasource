@@ -156,7 +156,7 @@ public abstract class AkaAbsctractDataSourceAspect implements ApplicationContext
             }
             return point.proceed();
         } catch (Exception e) {
-            log.error(""+e,e);
+            //log.error(""+e,e);
             throw e;
         }
         finally {
